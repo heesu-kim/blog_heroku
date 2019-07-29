@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import blog.views
+from django.conf.urls.static import static
+from django.conf import settings
+from ckeditor_uploader import views as views_ckeditor
+from django.views.decorators.cache import never_cache
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +30,7 @@ urlpatterns = [
     path('blog/edit/<int:blog_id>', blog.views.edit, name="edit"),
     path('blog/update/<int:blog_id>', blog.views.update, name="update"),
     path('blog/delete/<int:blog_id>', blog.views.delete, name="delete"),
-]
+    path('blog/newblog', blog.views.blogpost, name='newblog'),
+    path(r'^upload/', views_ckeditor.upload, name = 'ckeditor_upload'),
+    path(r'^browse/', never_cache(views_ckeditor.browse), name = 'ckeditor_browse'),
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

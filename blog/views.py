@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Blog
 from django.utils import timezone
+from .forms import BlogPost
 
 # Create your views here.
 def home(request):
@@ -54,3 +55,20 @@ def delete(request, blog_id):
     blog= get_object_or_404(Blog, pk= blog_id) # 특정 객체 가져오기(없으면 404 에러)
     blog.delete()
     return redirect('home') # home 이름의 url 로
+
+#forms기반의 view함수
+def blogpost(request):
+    if request.method == 'POST':
+        form = BlogPost(request.POST)
+
+        #form양식이 유효하면
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.pub_date = timezone.now()
+            post.save()
+            return redirect('home')
+
+#get 형식으로 들어오면 페이지 띄우기
+    else:
+        form = BlogPost()
+        return render(request, 'blog/new.html', {'form':form})
